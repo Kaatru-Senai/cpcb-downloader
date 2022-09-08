@@ -3,7 +3,7 @@ import json
 from cpcb_web_data import sites
 
 
-class CpcbParam(enum.Enum, str):
+class CpcbParam(str, enum.Enum):
     STATIONS = 'stations',
     CITY_NAME = 'cityName',
     CITIES = 'cities',

@@ -1,24 +1,26 @@
 import datetime
-import json
+import time
 
+import pandas
 from cpcb_station_data import get_site_list, CpcbParam
 from payload import Payload
 import requests
-
-
-# from_date = input('enter the from date')
-# to_date = input('enter the to date')
+from model.cpcb_response_data import ParseData
 
 
 def get_data():
+    pd: pandas.DataFrame = pandas.DataFrame()
     stations_list = get_site_list()
     for station in stations_list:
         for k, v in station.items():
             payload = Payload(state=v[CpcbParam.STATE_NAME], city=v[CpcbParam.CITY_NAME], site_id=k,
-                              start_date=date, end_date=date).generate()
+                              start_date=from_date, end_date=to_date).generate()
             response = requests.post('https://app.cpcbccr.com/caaqms/fetch_table_data',
                                      data=payload, headers=headers)
-            print(response.json())
+            pd = pandas.concat([pd, pandas.DataFrame.from_dict(ParseData(response.json()).get())], axis=0,
+                               ignore_index=True)
+        pd.to_csv('cpcb-data.csv')
+        time.sleep(1)
 
 
 headers = {
@@ -43,4 +45,6 @@ headers = {
                     '104.0.0.0Safari/537.36 '
 
 }
-date = datetime.datetime.now()
+to_date = datetime.datetime.now()
+from_date = datetime.datetime(year=to_date.year, month=to_date.month, day=to_date.day-1, hour=00, minute=00, second=00)
+get_data()
