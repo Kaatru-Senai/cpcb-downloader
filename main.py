@@ -11,7 +11,7 @@ from model.cpcb_response_data import ParseData
 def get_data():
     pd: pandas.DataFrame = pandas.DataFrame()
     stations_list = get_site_list()
-    for station in stations_list[50]:
+    for station in stations_list:
         for k, v in station.items():
             payload = Payload(state=v[CpcbParam.STATE_NAME], city=v[CpcbParam.CITY_NAME], site_id=k,
                               start_date=from_date, end_date=to_date).generate()
