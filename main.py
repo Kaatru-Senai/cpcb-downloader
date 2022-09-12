@@ -6,7 +6,6 @@ from cpcb_station_data import get_site_list, CpcbParam
 from payload import Payload
 import requests
 from model.cpcb_response_data import ParseData
-from utility import is_after
 
 
 def get_data():
@@ -47,17 +46,20 @@ headers = {
 
 }
 parser = argparse.ArgumentParser()
-parser.add_argument('-fd', help='enter the from datetime in following format dd-mm-yyyy hh:mm (use 24H)')
-parser.add_argument('-td', help='enter the to datetime in following format dd-mm-yyyy hh:mm (use 24H)')
+parser.add_argument(
+    '-fd', help='enter the from datetime in following format dd-mm-yyyy hh:mm (use 24H)')
+parser.add_argument(
+    '-td', help='enter the to datetime in following format dd-mm-yyyy hh:mm (use 24H)')
 args = parser.parse_args()
 if args.fd or args.td:
     try:
         from_date = datetime.datetime.strptime(args.fd, '%d-%m-%Y %H:%M')
         to_date = datetime.datetime.strptime(args.td, '%d-%m-%Y %H:%M')
-        if not is_after(to_date, from_date):
-            if is_after(to_date, datetime.datetime.now()):
+        if from_date < to_date:
+            if to_date > datetime.datetime.now():
                 print('ERROR: to datetime should not exceed present datetime')
             else:
+                print('Fetching data')
                 get_data()
         else:
             print('ERROR: from date should come before to date')
