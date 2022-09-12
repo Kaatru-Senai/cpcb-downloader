@@ -7,13 +7,13 @@ def is_after(from_datetime: dt.datetime, to_datetime: dt.datetime) -> bool:
             if from_datetime.day == to_datetime.day:
                 if from_datetime.hour == to_datetime.hour:
                     if from_datetime.minute == to_datetime.minute or from_datetime.minute < to_datetime.minute:
-                        return True
+                        return False
                 elif from_datetime.hour < to_datetime.hour:
-                    return True
+                    return False
             elif from_datetime.day < to_datetime.day:
-                return True
+                return False
         elif from_datetime.month < to_datetime.month:
-            return True
+            return False
     elif from_datetime.year < to_datetime.year:
-        return True
-    return False
+        return False
+    return True

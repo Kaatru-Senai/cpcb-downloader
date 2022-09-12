@@ -54,7 +54,7 @@ if args.fd or args.td:
     try:
         from_date = datetime.datetime.strptime(args.fd, '%d-%m-%Y %H:%M')
         to_date = datetime.datetime.strptime(args.td, '%d-%m-%Y %H:%M')
-        if not is_after(to_date, from_date):
+        if not is_after(from_date, to_date):
             if is_after(to_date, datetime.datetime.now()):
                 print('ERROR: to datetime should not exceed present datetime')
             else:
