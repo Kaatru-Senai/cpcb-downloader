@@ -2,10 +2,10 @@ import datetime
 import time
 import argparse
 import pandas
-from cpcb_station_data import get_site_list, CpcbParam
+from cpcb_station_raw_data_parser import get_site_list, CpcbParam
 from payload import Payload
 import requests
-from model.cpcb_response_data import ParseData
+from model.response_data import ParseData
 
 
 def get_data():

@@ -1,8 +1,8 @@
 import enum
 import json
 
-from cpcb_stations_info import cpcb_station_locations
-from cpcb_web_data import sites
+from cpcb_station_coordinates import cpcb_station_locations
+from cpcb_station_raw_data import sites
 
 
 class CpcbParam(str, enum.Enum):
