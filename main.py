@@ -19,7 +19,7 @@ def get_data():
                                      data=payload, headers=headers)
             pd = pandas.concat([pd, pandas.DataFrame.from_dict(ParseData(response.json()).get())], axis=0,
                                ignore_index=True)
-        pd.to_csv('cpcb-data.csv')
+        pd.to_csv('cpcb-data.csv', index=False)
         time.sleep(1)
 
 
