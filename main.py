@@ -6,13 +6,12 @@ from cpcb_station_data import get_site_list, CpcbParam
 from payload import Payload
 import requests
 from model.cpcb_response_data import ParseData
-from utility import is_after
 
 
 def get_data():
     pd: pandas.DataFrame = pandas.DataFrame()
     stations_list = get_site_list()
-    for station in stations_list[50]:
+    for station in stations_list:
         for k, v in station.items():
             payload = Payload(state=v[CpcbParam.STATE_NAME], city=v[CpcbParam.CITY_NAME], site_id=k,
                               start_date=from_date, end_date=to_date).generate()
@@ -20,7 +19,7 @@ def get_data():
                                      data=payload, headers=headers)
             pd = pandas.concat([pd, pandas.DataFrame.from_dict(ParseData(response.json()).get())], axis=0,
                                ignore_index=True)
-        pd.to_csv('cpcb-data.csv')
+        pd.to_csv('cpcb-data.csv', index=False)
         time.sleep(1)
 
 
@@ -47,17 +46,20 @@ headers = {
 
 }
 parser = argparse.ArgumentParser()
-parser.add_argument('-fd', help='enter the from datetime in following format dd-mm-yyyy hh:mm (use 24H)')
-parser.add_argument('-td', help='enter the to datetime in following format dd-mm-yyyy hh:mm (use 24H)')
+parser.add_argument(
+    '-fd', help='enter the from datetime in following format dd-mm-yyyy hh:mm (use 24H)')
+parser.add_argument(
+    '-td', help='enter the to datetime in following format dd-mm-yyyy hh:mm (use 24H)')
 args = parser.parse_args()
 if args.fd or args.td:
     try:
         from_date = datetime.datetime.strptime(args.fd, '%d-%m-%Y %H:%M')
         to_date = datetime.datetime.strptime(args.td, '%d-%m-%Y %H:%M')
-        if not is_after(from_date, to_date):
-            if is_after(to_date, datetime.datetime.now()):
+        if from_date < to_date:
+            if to_date > datetime.datetime.now():
                 print('ERROR: to datetime should not exceed present datetime')
             else:
+                print('Fetching data')
                 get_data()
         else:
             print('ERROR: from date should come before to date')

@@ -14,7 +14,7 @@ class CpcbParam(str, enum.Enum):
     ID = 'id'
 
 
-def get_site_list() -> list[dict]:
+def get_site_list():
     site_list = []
     cpcb_web_data = json.loads(sites)
     for place in cpcb_web_data[CpcbParam.STATIONS]:
