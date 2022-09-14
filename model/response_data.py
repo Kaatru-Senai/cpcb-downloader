@@ -17,16 +17,21 @@ class ResponseDataParam(str, enum.Enum):
     ADDRESS = 'address',
     SITE_INFO = 'siteInfo'
     LATITUDE = 'latitude',
-    LONGITUDE = 'longitude'
+    LONGITUDE = 'longitude',
+    STATUS = 'status'
+
+
+class ResponseDataValue(str, enum.Enum):
+    FAILED = 'failed',
+    SUCCESS = 'success'
 
 
 class ParseData:
     def __init__(self, data: dict, meta_data: dict):
-        self.data_list: dict = data[ResponseDataParam.DATA]
+        self.data_list: dict = data
         self.meta_data: dict = meta_data
 
     def get(self) -> dict:
-        site_info = self.data_list[ResponseDataParam.SITE_INFO]
         parsed_data = {
             ResponseDataParam.SITE_ID.value: [],
             ResponseDataParam.SITE_NAME.value: [],
@@ -40,16 +45,25 @@ class ParseData:
             ResponseDataParam.TO_DATE.value: [],
             ResponseDataParam.PM25.value: []
         }
-        for row in self.data_list[ResponseDataParam.TABULAR_DATA][ResponseDataParam.BODY_CONTENT]:
-            parsed_data[ResponseDataParam.SITE_ID].append(site_info[ResponseDataParam.SITE_ID])
-            parsed_data[ResponseDataParam.SITE_NAME].append(site_info[ResponseDataParam.SITE_NAME])
-            parsed_data[ResponseDataParam.STATE].append(site_info[ResponseDataParam.STATE])
-            parsed_data[ResponseDataParam.CITY].append(site_info[ResponseDataParam.CITY])
-            parsed_data[ResponseDataParam.DISTRICT].append(site_info[ResponseDataParam.DISTRICT])
-            parsed_data[ResponseDataParam.ADDRESS].append(site_info[ResponseDataParam.ADDRESS])
-            parsed_data[ResponseDataParam.FROM_DATE].append(row[ResponseDataParam.FROM_DATE])
-            parsed_data[ResponseDataParam.TO_DATE].append(row[ResponseDataParam.TO_DATE])
-            parsed_data[ResponseDataParam.PM25].append(row[ResponseDataParam.PM25])
+        if self.data_list[ResponseDataParam.STATUS] == ResponseDataValue.SUCCESS:
+            self.data_list: dict = self.data_list[ResponseDataParam.DATA]
+            site_info = self.data_list[ResponseDataParam.SITE_INFO]
+            for row in self.data_list[ResponseDataParam.TABULAR_DATA][ResponseDataParam.BODY_CONTENT]:
+                parsed_data[ResponseDataParam.SITE_ID].append(site_info[ResponseDataParam.SITE_ID])
+                parsed_data[ResponseDataParam.SITE_NAME].append(site_info[ResponseDataParam.SITE_NAME])
+                parsed_data[ResponseDataParam.STATE].append(site_info[ResponseDataParam.STATE])
+                parsed_data[ResponseDataParam.CITY].append(site_info[ResponseDataParam.CITY])
+                parsed_data[ResponseDataParam.DISTRICT].append(site_info[ResponseDataParam.DISTRICT])
+                parsed_data[ResponseDataParam.ADDRESS].append(site_info[ResponseDataParam.ADDRESS])
+                parsed_data[ResponseDataParam.FROM_DATE].append(row[ResponseDataParam.FROM_DATE])
+                parsed_data[ResponseDataParam.TO_DATE].append(row[ResponseDataParam.TO_DATE])
+                parsed_data[ResponseDataParam.PM25].append(row[ResponseDataParam.PM25])
+                parsed_data[ResponseDataParam.LATITUDE.value].append(self.meta_data[ResponseDataParam.LATITUDE])
+                parsed_data[ResponseDataParam.LONGITUDE.value].append(self.meta_data[ResponseDataParam.LONGITUDE])
+        else:
             parsed_data[ResponseDataParam.LATITUDE.value].append(self.meta_data[ResponseDataParam.LATITUDE])
             parsed_data[ResponseDataParam.LONGITUDE.value].append(self.meta_data[ResponseDataParam.LONGITUDE])
+            for k, v in parsed_data.items():
+                if len(v) == 0:
+                    parsed_data[k].append(None)
         return parsed_data
