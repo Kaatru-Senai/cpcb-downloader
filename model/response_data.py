@@ -35,9 +35,6 @@ class ParseData:
         parsed_data = {
             ResponseDataParam.SITE_ID.value: [],
             ResponseDataParam.SITE_NAME.value: [],
-            ResponseDataParam.STATE.value: [],
-            ResponseDataParam.CITY.value: [],
-            ResponseDataParam.DISTRICT.value: [],
             ResponseDataParam.ADDRESS.value: [],
             ResponseDataParam.LATITUDE.value: [],
             ResponseDataParam.LONGITUDE.value: [],
@@ -51,9 +48,6 @@ class ParseData:
             for row in self.data_list[ResponseDataParam.TABULAR_DATA][ResponseDataParam.BODY_CONTENT]:
                 parsed_data[ResponseDataParam.SITE_ID].append(site_info[ResponseDataParam.SITE_ID])
                 parsed_data[ResponseDataParam.SITE_NAME].append(site_info[ResponseDataParam.SITE_NAME])
-                parsed_data[ResponseDataParam.STATE].append(site_info[ResponseDataParam.STATE])
-                parsed_data[ResponseDataParam.CITY].append(site_info[ResponseDataParam.CITY])
-                parsed_data[ResponseDataParam.DISTRICT].append(site_info[ResponseDataParam.DISTRICT])
                 parsed_data[ResponseDataParam.ADDRESS].append(site_info[ResponseDataParam.ADDRESS])
                 parsed_data[ResponseDataParam.FROM_DATE].append(row[ResponseDataParam.FROM_DATE])
                 parsed_data[ResponseDataParam.TO_DATE].append(row[ResponseDataParam.TO_DATE])
