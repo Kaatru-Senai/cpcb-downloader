@@ -2,10 +2,10 @@ import datetime
 import time
 import argparse
 import pandas
-from cpcb_station_data import get_site_list, CpcbParam
+from cpcb_station_raw_data_parser import get_site_list, CpcbParam
 from payload import Payload
 import requests
-from model.cpcb_response_data import ParseData
+from model.response_data import ParseData
 
 
 def get_data():
@@ -17,9 +17,10 @@ def get_data():
                               start_date=from_date, end_date=to_date).generate()
             response = requests.post('https://app.cpcbccr.com/caaqms/fetch_table_data',
                                      data=payload, headers=headers)
-            pd = pandas.concat([pd, pandas.DataFrame.from_dict(ParseData(response.json()).get())], axis=0,
+            pd = pandas.concat([pd, pandas.DataFrame.from_dict(ParseData(response.json(), v).get())], axis=0,
                                ignore_index=True)
         pd.to_csv('cpcb-data.csv', index=False)
+        print(len(pd))
         time.sleep(1)
 
 

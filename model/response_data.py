@@ -1,5 +1,5 @@
 import enum
-from cpcb_stations_info import cpcb_station_locations
+
 
 class ResponseDataParam(str, enum.Enum):
     DATA = 'data',
@@ -21,8 +21,9 @@ class ResponseDataParam(str, enum.Enum):
 
 
 class ParseData:
-    def __init__(self, data: dict):
+    def __init__(self, data: dict, meta_data: dict):
         self.data_list: dict = data[ResponseDataParam.DATA]
+        self.meta_data: dict = meta_data
 
     def get(self) -> dict:
         site_info = self.data_list[ResponseDataParam.SITE_INFO]
@@ -49,21 +50,6 @@ class ParseData:
             parsed_data[ResponseDataParam.FROM_DATE].append(row[ResponseDataParam.FROM_DATE])
             parsed_data[ResponseDataParam.TO_DATE].append(row[ResponseDataParam.TO_DATE])
             parsed_data[ResponseDataParam.PM25].append(row[ResponseDataParam.PM25])
-
-            key = "Station Name"
-            val = site_info[ResponseDataParam.SITE_NAME]
-            cpcb_station = next(filter(lambda d: d.get(key) == val, cpcb_station_locations), None)
-
-            if not cpcb_station:
-                cpcb_station = {
-                                'Station Name': 'Marhatal, Jabalpur - MPPCB',
-                                'latitude': 23.1608938,
-                                'longitude': 79.9497702
-                                }
-            try:
-                parsed_data[ResponseDataParam.LATITUDE.value].append(cpcb_station["latitude"])
-                parsed_data[ResponseDataParam.LONGITUDE.value].append(cpcb_station["longitude"])
-            except TypeError as err:
-                print(val)
-                print(err)
-        return parsed_data  
+            parsed_data[ResponseDataParam.LATITUDE.value].append(self.meta_data[ResponseDataParam.LATITUDE])
+            parsed_data[ResponseDataParam.LONGITUDE.value].append(self.meta_data[ResponseDataParam.LONGITUDE])
+        return parsed_data
