@@ -57,4 +57,8 @@ def get_site_list():
 
 
 if __name__ == '__main__':
-    print(len(get_site_list()))
+    sites = get_site_list()
+    for _ in range(len(sites)):
+        for k, v in sites[_].items():
+            if k == 'site_274':
+                print(_)
