@@ -24,6 +24,7 @@ python main.py -fd <from-date> -td <to-date>
 ```
 
 The main file takes two arguments which are `from date (fd)` and `to date (td)`. The dates are used to get data during that time period.
+The format for for `from date (fd)` and `to date (td)` is `dd-mm-yyyy hh:mm (use 24H)` 
 
 
 It will take around `8-10 minutes` for all the station's data to be downloaded.
