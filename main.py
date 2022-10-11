@@ -23,38 +23,56 @@ class Post(BaseModel):
     fdate: datetime.datetime
     tdate: datetime.datetime
 
+class Data_download:
+    def __init__(self, f_date, t_date) -> None:
+        self.from_date = f_date
+        self.to_date = t_date
+        self.id = uuid.uuid1()
+        self.progress = 0
+        self.thread = threading.Thread(target=self.start_process, args=())
+        self.thread_id = self.thread.getName()
 
-def start_process(from_date, to_date):
-    if os.path.exists('cpcb-data.csv'):
-        pd: pandas.DataFrame = pandas.read_csv('cpcb-data.csv')
-    else:
-        pd: pandas.DataFrame = pandas.DataFrame()
-    stations_list = get_site_list()
-    for station in stations_list:
-        for k, v in station.items():
-            pd = pandas.concat([pd, pandas.DataFrame.from_dict(get_cpcb_data(k, v, from_date, to_date))], axis=0,
-                               ignore_index=True)
-        pd.to_csv('cpcb-data.csv', index=False)
-        print(len(pd))
-        time.sleep(1)
+    def start_process(self):
+        if os.path.exists('cpcb-data.csv'):
+            pd: pandas.DataFrame = pandas.read_csv('cpcb-data.csv')
+        else:
+            pd: pandas.DataFrame = pandas.DataFrame()
 
+        i = 0
+        stations_list = get_site_list()
+        for station in stations_list:
+            for k, v in station.items():
+                pd = pandas.concat([pd, pandas.DataFrame.from_dict(self.get_cpcb_data(k, v))], axis=0,
+                                ignore_index=True)
+            pd.to_csv('cpcb-data.csv', index=False)
 
-def get_cpcb_data(site_id: str, site_meta_data: dict, from_date, to_date):
-    global retry_sleep_time
-    payload = Payload(state=site_meta_data[CpcbParam.STATE_NAME], city=site_meta_data[CpcbParam.CITY_NAME],
-                      site_id=site_id, start_date=from_date, end_date=to_date).generate()
-    try:
-        response = requests.post('https://app.cpcbccr.com/caaqms/fetch_table_data',
-                                 data=payload, headers=headers, timeout=10)
-        retry_sleep_time = 0
+            i+=1
+            self.progress = int((i/len(stations_list))*100)
+            if i == len(stations_list):
+                self.progress = 100
+
+            print(len(pd))
+            time.sleep(1)
+
+    def get_cpcb_data(self, site_id: str, site_meta_data: dict):
+        global retry_sleep_time
+        payload = Payload(state=site_meta_data[CpcbParam.STATE_NAME], city=site_meta_data[CpcbParam.CITY_NAME],
+                        site_id=site_id, start_date=self.from_date, end_date=self.to_date).generate()
         try:
-            return ParseData(response.json(), site_meta_data).get()
-        except ValueError:
-            print(site_id)
-            print(response.text)
-    except Timeout:
-        retry_sleep_time += 3
-        time.sleep(retry_sleep_time)
+            response = requests.post('https://app.cpcbccr.com/caaqms/fetch_table_data',
+                                    data=payload, headers=headers, timeout=10)
+            retry_sleep_time = 0
+           
+            
+            try:
+                return ParseData(response.json(), site_meta_data).get()
+            except ValueError:
+                print(site_id)
+                print(response.text)
+        except Timeout:
+            retry_sleep_time += 3
+            time.sleep(retry_sleep_time)
+
 
 
 headers = {
@@ -105,7 +123,16 @@ async def get_date(data: Post):
                     return 'ERROR: to datetime should not exceed present datetime'
                 else:
                     print('Fetching data')
-                    start_process(from_date, to_date)
+                    Dd: Data_download = Data_download(from_date, to_date)
+                    res = {}
+                    res['Status'] = "process created"
+                    res['id'] = Dd.id
+                    res['thread_id'] = Dd.thread_id
+
+                    Dd.thread.start()
+                    
+
+                    return res
 
                     
             else:
