@@ -15,7 +15,7 @@ from fastapi import FastAPI, Body, WebSocket
 from pydantic import BaseModel
 import uuid
 from fastapi.responses import HTMLResponse
-from Server import Running, Waiting
+import Server
 
 
 
@@ -88,20 +88,20 @@ class Data_download:
             time.sleep(retry_sleep_time)
 
     def estimated_time(self):
-        if Running[self.id]:
+        if Server.Running[self.id]:
             return self.et
-        lines = len(Waiting)//10
-        pos = len(Waiting)%10
+        lines = len(Server.Waiting)//10
+        pos = len(Server.Waiting)%10
 
         Dd: Data_download = self.find_nth_smallest_et(pos)
 
         self.et = Dd.selftime * (lines+1) + Dd.et
         return self.et
 
-        
+
     def find_nth_smallest_et(pos):
         list = []
-        for k,v in list(Running.items()):
+        for k,v in list(Server.Running.items()):
             list.append(v)
         item = None
         for i in range(pos):
