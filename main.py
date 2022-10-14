@@ -38,13 +38,25 @@ class Data_download:
 
 
         i = 0
+        loop_time= 0
+
         stations_list = get_site_list()
         for station in stations_list:
-            
+
+            st = datetime.datetime.now()
+
             for k, v in station.items():
                 pd = pandas.concat([pd, pandas.DataFrame.from_dict(self.get_cpcb_data(k, v))], axis=0,
                                 ignore_index=True)
             pd.to_csv('cpcb-data.csv', index=False)
+
+
+            if not i:   #only for the first iteration it'll compute the loop time
+                loop_time = datetime.datetime.now() - st
+                self.selftime = (loop_time.microseconds*len(stations_list))/1000
+            
+            self.et = self.selftime - (i+1)*(loop_time.microseconds/1000) #it'll compute total time remain to be executed completly
+
 
             i+=1
 
