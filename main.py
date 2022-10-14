@@ -27,6 +27,8 @@ class Data_download:
         self.progress = 0
         self.thread = threading.Thread(target=self.start_process, args=())
         self.thread_id = self.thread.getName()
+        self.selftime = None
+        self.et = None
 
     def start_process(self):
         if os.path.exists('cpcb-data.csv'):
@@ -34,16 +36,20 @@ class Data_download:
         else:
             pd: pandas.DataFrame = pandas.DataFrame()
 
+
         i = 0
         stations_list = get_site_list()
         for station in stations_list:
+            
             for k, v in station.items():
                 pd = pandas.concat([pd, pandas.DataFrame.from_dict(self.get_cpcb_data(k, v))], axis=0,
                                 ignore_index=True)
             pd.to_csv('cpcb-data.csv', index=False)
 
             i+=1
+
             self.progress = int((i/len(stations_list))*100)
+            
             if i == len(stations_list):
                 self.progress = 100
 
@@ -66,7 +72,7 @@ class Data_download:
                 print(site_id)
                 print(response.text)
         except Timeout:
-            retry_sleep_time += 3
+            retry_sleep_time += 3 
             time.sleep(retry_sleep_time)
 
 

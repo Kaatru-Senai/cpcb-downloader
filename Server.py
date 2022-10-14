@@ -64,14 +64,14 @@ def Scheduling():
             Running[temp.id] = temp
 
             print(f" len(running) = {len(Running)} len(Waiting) = {len(Waiting)}")
-            print(f"The thread {temp.thread_id} is start running")
+            print(f"The thread {temp.id} is start running")
 
             temp.thread.start()
 
         for k , v in list(Running.items()):
-            print(f"{v.thread_id} progress = {v.progress}%")
+            print(f"{v.id} progress = {v.progress}%")
             if v.progress >= 100:
-                print(f"The thread {temp.thread_id} is done executing")
+                print(f"The thread {temp.id} is done executing")
                 Running.pop(k)
         time.sleep(3)
 
