@@ -31,8 +31,10 @@ class Data_download:
         self.et = None
 
     def start_process(self):
-        if os.path.exists(f'{self.id}.csv'):
-            pd: pandas.DataFrame = pandas.read_csv(f'{self.id}.csv')
+        if not os.path.isdir('./Downloaded_csv'):
+            os.mkdir('Downloaded_csv')
+        if os.path.exists(f'./Downloaded_csv/{self.id}.csv'):
+            pd: pandas.DataFrame = pandas.read_csv(f'./Downloaded_csv/{self.id}.csv')
         else:
             pd: pandas.DataFrame = pandas.DataFrame()
 
@@ -48,7 +50,7 @@ class Data_download:
             for k, v in station.items():
                 pd = pandas.concat([pd, pandas.DataFrame.from_dict(self.get_cpcb_data(k, v))], axis=0,
                                 ignore_index=True)
-            pd.to_csv(f'{self.id}.csv', index=False)
+            pd.to_csv(f'./Downloaded_csv/{self.id}.csv', index=False)
 
 
             if not i:   #only for the first iteration it'll compute the loop time
@@ -97,7 +99,6 @@ class Data_download:
 
         self.et = Dd.selftime * (lines+1) + Dd.et
         return self.et
-
 
     def find_nth_smallest_et(pos):
         list = []
