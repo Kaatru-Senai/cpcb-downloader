@@ -1,10 +1,14 @@
 import threading
-
+import os
 from fastapi import FastAPI, Body, WebSocket
 from pydantic import BaseModel
 import datetime
 from main import Data_download
 import time
+from fastapi.responses import StreamingResponse
+import io
+import pandas as pd
+
 
 app = FastAPI()
 
@@ -15,7 +19,8 @@ class Post(BaseModel):
 Running = {}
 Waiting = []
 
-
+class St(BaseModel):
+    p_id: str
 
 @app.post("/query")
 async def get_date(data: Post):
@@ -80,7 +85,7 @@ Sche.start()
 
 
 
-def Find_obj(process_id):
+async def Find_obj(process_id):
     if len(Running) >0 or len(Waiting) > 0:
         print("inside loop")
 
@@ -94,7 +99,7 @@ def Find_obj(process_id):
     else:
         print('No Items found')
         return None
-def my_func(process_id):
+async def my_func(process_id):
     
     obj = Find_obj(process_id)
     if obj:
@@ -106,6 +111,30 @@ def my_func(process_id):
         return data
     print("couldn't find anything")
 
+
+
+@app.get("/get_csv")
+async def get_csv(id: str):
+    print(id)
+
+    if os.path.exists(f'./Downloaded_csv/{id}.csv'):
+
+        df = pd.read_csv(f'./Downloaded_csv/{id}.csv')
+
+        stream = io.StringIO()
+
+        df.to_csv(stream, index = False)
+
+        response = StreamingResponse(iter([stream.getvalue()]),
+                            media_type="text/csv"
+        )
+
+        response.headers["Content-Disposition"] = f"attachment; filename={id}.csv"
+
+        return response
+
+    else:
+        return {"status": "File with the name doesn't exists"}
 
 
 @app.websocket("/ws")
