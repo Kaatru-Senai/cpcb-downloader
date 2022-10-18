@@ -8,3 +8,4 @@ Lib
 __pycache__
 README.md
 cpcb-data.csv
+.vscode/

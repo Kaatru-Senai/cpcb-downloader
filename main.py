@@ -15,12 +15,12 @@ from fastapi import FastAPI, Body, WebSocket
 from pydantic import BaseModel
 import uuid
 from fastapi.responses import HTMLResponse
-import Server
+import server
+from utility import util
 
 
-
-class Data_download:
-    def __init__(self, f_date, t_date) -> None:
+class Downloader:
+    def __init__(self, f_date, t_date, user_mail) -> None:
         self.from_date = f_date
         self.to_date = t_date
         self.id = uuid.uuid1()
@@ -29,6 +29,9 @@ class Data_download:
         self.thread_id = self.thread.getName()
         self.selftime = None
         self.et = None
+        self.email = "custom email" #demo
+        self.reciver_mail = user_mail
+        self.password = "password"#demo
 
     def start_process(self):
         if not os.path.isdir('./Downloaded_csv'):
@@ -44,31 +47,41 @@ class Data_download:
 
         stations_list = get_site_list()
         for station in stations_list:
+            
 
+           
             st = datetime.datetime.now()
 
             for k, v in station.items():
                 pd = pandas.concat([pd, pandas.DataFrame.from_dict(self.get_cpcb_data(k, v))], axis=0,
                                 ignore_index=True)
+                
+                # # pd = pandas.concat([pd, df1], axis=1)#Only for testing
+                # time.sleep(2)
+
             pd.to_csv(f'./Downloaded_csv/{self.id}.csv', index=False)
 
 
 
             if not i:   #only for the first iteration it'll compute the loop time
                 loop_time = datetime.datetime.now() - st
-                self.selftime = (loop_time.microseconds*len(stations_list))/1000
+                self.selftime = (loop_time.seconds*len(stations_list))
             
-            self.et = self.selftime - (i+1)*(loop_time.microseconds/1000) #it'll compute total time remain to be executed completly
-
+            self.et = self.selftime - (i+1)*(loop_time.seconds) #it'll compute total time remain to be executed completly
 
             i+=1
 
-            self.progress = int((i/len(stations_list))*100)
+            self.progress = int((i/len(stations_list))*100)#testing code remove 17 for deployment
             
-            if i == len(stations_list):
+            if i >= len(stations_list):
                 self.progress = 100
+                #testing code line
+            if self.progress >= 100:
+                print("End of a loop")
+                break
 
-            print(len(pd))
+            print(i)
+            # print(len(pd))
             time.sleep(1)
 
     def get_cpcb_data(self, site_id: str, site_meta_data: dict):
@@ -82,7 +95,7 @@ class Data_download:
            
             
             try:
-                return ParseData(response.json(), site_meta_data).get()
+                return ParseData(response.text, site_meta_data).get()
             except ValueError:
                 print(site_id)
                 print(response.text)
@@ -90,36 +103,13 @@ class Data_download:
             retry_sleep_time += 3 
             time.sleep(retry_sleep_time)
 
+
     def estimated_time(self):
-        if Server.Running[self.id]:
-            return self.et
-        lines = len(Server.Waiting)//10
-        pos = len(Server.Waiting)%10
-
-        Dd: Data_download = self.find_nth_smallest_et(pos)
-
-        self.et = Dd.selftime * (lines+1) + Dd.et
-        return self.et
-
-
-    def find_nth_smallest_et(pos):
-        list = []
-        for k,v in list(Server.Running.items()):
-            list.append(v)
-        item = None
-        for i in range(pos):
-            min = 999999
-            index = -1
-            for j in range(len(list)):
-                if list[j] < min:
-                    min = list[j].et
-                    index = j
-                    item = list[j]
-            
-            if index > -1:
-                list.pop(index)
-
-        return item
+        Ut:util = util()
+        return Ut.ET(self.id, self.et)
+    def send_email(self):
+        Ut:util = util()
+        Ut.send_email(self.email, self.password, self.reciver_mail)
 
 
 
