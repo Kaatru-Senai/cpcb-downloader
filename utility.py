@@ -131,12 +131,12 @@ def clear_directory():
                 file_time = os.path.getmtime(f'./Downloaded_csv/{file}')
                 
                 print(now-file_time)
-                if now - file_time > 100:
+                if now - file_time > 3600:
                     os.remove(f'./Downloaded_csv/{file}')
                 else:
                     time_list.append(file_time)
 
-        sleep_time = (now - min(time_list)) if time_list else 100 
+        sleep_time = (now - min(time_list)) if time_list else 3600 
 
                     
         time.sleep(sleep_time+30)
