@@ -1,4 +1,5 @@
 import asyncio
+from concurrent.futures import thread
 import email
 from hashlib import new
 import threading
@@ -6,13 +7,13 @@ import os
 from fastapi import FastAPI, Body, WebSocket
 from pydantic import BaseModel
 import datetime
-from main import Data_download
+from main import Downloader
 import time
 from fastapi.responses import StreamingResponse
 import io
 import pandas as pd
 
-from utility import util
+from utility import util, clear_directory
 
 
 util_instance: util = util()
@@ -47,7 +48,7 @@ def query_helper_func(f_date, t_date, mail):
                     return 'ERROR: to datetime should not exceed present datetime'
                 else:
                     print('Fetching data')
-                    Dd: Data_download = Data_download(from_date, to_date,"hello")
+                    Dd: Downloader = Downloader(from_date, to_date,"hello")
                     res = {}
                     res['Status'] = "process created"
                     res['id'] = Dd.id
@@ -78,11 +79,12 @@ async def get_date(data: Post):
 
 
 
-Sche = threading.Thread(target=util_instance.scheduling, args=())
+Sche = threading.Thread(target=util_instance.schedule, args=())
 Sche.start()
 
 
-
+delete_file = threading.Thread(target=clear_directory, args=())
+delete_file.start()
 
 
 

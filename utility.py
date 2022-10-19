@@ -3,7 +3,9 @@ from email import message
 import time
 import server
 import smtplib
-
+from genericpath import isfile
+from datetime import datetime 
+import os
 class util:
     def __init__(self) -> None:
         pass
@@ -113,4 +115,29 @@ class util:
         s.sendmail(sender_mail, reciver_mail, message)
         s.quit()
 
-        
+    
+
+
+
+def clear_directory():
+    while True:
+        time_list = []
+        now = time.mktime(datetime.now().timetuple())
+        print(now)
+
+        for file in os.listdir('./Downloaded_csv'):
+
+            if os.path.isfile(f'./Downloaded_csv/{file}'):
+                file_time = os.path.getmtime(f'./Downloaded_csv/{file}')
+                
+                print(now-file_time)
+                if now - file_time > 100:
+                    os.remove(f'./Downloaded_csv/{file}')
+                else:
+                    time_list.append(file_time)
+
+        sleep_time = (now - min(time_list)) if time_list else 100 
+
+                    
+        time.sleep(sleep_time+30)
+
