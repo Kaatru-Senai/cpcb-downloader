@@ -1,4 +1,6 @@
+import base64
 import enum
+import json
 
 
 class ResponseDataParam(str, enum.Enum):
@@ -27,8 +29,8 @@ class ResponseDataValue(str, enum.Enum):
 
 
 class ParseData:
-    def __init__(self, data: dict, meta_data: dict):
-        self.data_list: dict = data
+    def __init__(self, data: str, meta_data: dict):
+        self.data_list: dict = json.loads(base64.b64decode(data).decode())
         self.meta_data: dict = meta_data
 
     def get(self) -> dict:
