@@ -28,7 +28,7 @@ class Downloader:
         self.thread = threading.Thread(target=self.start_process, args=())
         self.thread_id = self.thread.getName()
         self.selftime = None
-        self.et = None
+        self.et = 0
         self.email = "custom email" #demo
         self.reciver_mail = user_mail
         self.password = "password"#demo
@@ -61,6 +61,7 @@ class Downloader:
 
             pd.to_csv(f'./Downloaded_csv/{self.id}.csv', index=False)
 
+        
 
 
             if not i:   #only for the first iteration it'll compute the loop time
@@ -69,6 +70,7 @@ class Downloader:
             
             self.et = self.selftime - (i+1)*(loop_time.seconds) #it'll compute total time remain to be executed completly
 
+            print('Estimated time',self.et)
             i+=1
 
             self.progress = int((i/len(stations_list))*100)#testing code remove 17 for deployment
@@ -107,9 +109,6 @@ class Downloader:
     def estimated_time(self):
         Ut:util = util()
         return Ut.ET(self.id, self.et)
-    def send_email(self):
-        Ut:util = util()
-        Ut.send_email(self.email, self.password, self.reciver_mail)
 
 
 

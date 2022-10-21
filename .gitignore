@@ -9,3 +9,9 @@ __pycache__
 README.md
 cpcb-data.csv
 .vscode/
+websocket_file.py
+
+Downloaded_csv/
+send_m.py
+textfile.txt
+websocket_file.py

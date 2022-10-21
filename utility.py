@@ -1,4 +1,3 @@
-
 from email import message
 import time
 import server
@@ -34,7 +33,7 @@ class util:
                 print(f'{len(server.Running)} are server.Running')
             time.sleep(5)
 
-
+    
     def find_obj(self,process_id):
         if len(server.Running) >0 or len(server.Waiting) > 0:
             print("inside loop")
@@ -73,7 +72,7 @@ class util:
 
 
 
-    def ET(self, id, et):
+    def ET(self, id,et):
         if id in server.Running:
             return server.Running[id].et
         lines = len(server.Waiting)//10
@@ -81,8 +80,8 @@ class util:
 
         Dd: util = self.find_nth_smallest_et(pos)
 
-        self.et = Dd.selftime * (lines+1) + Dd.et
-        return self.et
+        et = Dd.selftime * (lines+1) + Dd.et
+        return et
 
     def find_nth_smallest_et(self,pos):
         list1 = []
@@ -103,19 +102,30 @@ class util:
 
         return item
 
-    def send_email(self, sender_mail, sender_password, reciver_mail):
-        print("Email sending is not occur : NEED enhancement")
-        return
-        s = smtplib.SMTP('smtp.gmail.com', 587)
-        s.starttls()
 
-       
 
-        message = "Your process created successfully and ready for execution you can check it's progress at link  http://localhost:8000/query"
-        s.sendmail(sender_mail, reciver_mail, message)
-        s.quit()
 
+
+def send_email(reciver_mail, id):
+    gmail_user = "SENDER_EMAIL"
+    gmail_password = "SENDER_PASSWORD"
+
+    sent_from = gmail_user
+    to = [f'{reciver_mail}']
     
+
+    email_text = f"subject: Requested Accepted for Downloading\n\n\t Your process id: {id}\n To check the progress use ws://localhost:8000/ws"
+
+    try:
+        smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        smtp_server.ehlo()
+        smtp_server.login(gmail_user, gmail_password)
+        smtp_server.sendmail(sent_from, to, email_text)
+        smtp_server.close()
+        print ("Email sent successfully!")
+    except Exception as ex:
+        print ("Something went wrong….",ex)
+
 
 
 

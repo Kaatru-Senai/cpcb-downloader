@@ -13,7 +13,7 @@ from fastapi.responses import StreamingResponse
 import io
 import pandas as pd
 
-from utility import util, clear_directory
+from utility import util, clear_directory,send_email
 
 
 util_instance: util = util()
@@ -55,7 +55,8 @@ def query_helper_func(f_date, t_date, mail):
                     
 
                     Waiting.append(Dd)
-                    Dd.send_email()
+                    threading.Thread(target=send_email, args=(mail, Dd.id)).start()
+                    
                     return res   
             else:
                 return 'ERROR: from date should come before to date'
