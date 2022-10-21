@@ -20,7 +20,8 @@ from utility import util
 
 
 class Downloader:
-    def __init__(self, f_date, t_date, user_mail) -> None:
+    """Takes from_date and to_date and download data from cpcb station save as csv file"""
+    def __init__(self, f_date, t_date) -> None:
         self.from_date = f_date
         self.to_date = t_date
         self.id = uuid.uuid1()
@@ -29,11 +30,12 @@ class Downloader:
         self.thread_id = self.thread.getName()
         self.selftime = None
         self.et = 0
-        self.email = "custom email" #demo
-        self.reciver_mail = user_mail
-        self.password = "password"#demo
+
 
     def start_process(self):
+        """
+        This function responsible for calling get_cpcb_data and download save the file, file name is the unique id generated uuid module
+        """
         if not os.path.isdir('./Downloaded_csv'):
             os.mkdir('Downloaded_csv')
         if os.path.exists(f'./Downloaded_csv/{self.id}.csv'):
@@ -55,9 +57,7 @@ class Downloader:
             for k, v in station.items():
                 pd = pandas.concat([pd, pandas.DataFrame.from_dict(self.get_cpcb_data(k, v))], axis=0,
                                 ignore_index=True)
-                
-                # # pd = pandas.concat([pd, df1], axis=1)#Only for testing
-                # time.sleep(2)
+
 
             pd.to_csv(f'./Downloaded_csv/{self.id}.csv', index=False)
 
@@ -87,6 +87,7 @@ class Downloader:
             time.sleep(1)
 
     def get_cpcb_data(self, site_id: str, site_meta_data: dict):
+        """This function request to the cpcb api and get the data as json format"""
         global retry_sleep_time
         payload = Payload(state=site_meta_data[CpcbParam.STATE_NAME], city=site_meta_data[CpcbParam.CITY_NAME],
                         site_id=site_id, start_date=self.from_date, end_date=self.to_date).generate()
@@ -107,6 +108,7 @@ class Downloader:
 
 
     def estimated_time(self):
+        """Get the estimated time it takes to complete this process. by calling ET() function from util class in utility.py module"""
         Ut:util = util()
         return Ut.ET(self.id, self.et)
 

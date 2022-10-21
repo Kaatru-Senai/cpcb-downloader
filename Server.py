@@ -27,28 +27,31 @@ class Post(BaseModel):
     
 
 Running = {}
+"""Running is a dict which have process id as key and Downloader obj as value"""
 Waiting = []
 
 
 def query_helper_func(f_date, t_date, mail):
+    """Process the datetime obj it got from post request, and create the process with this and push that into waiting list, to be schedule by the schedule function inside utility.py
+    also return a response containing status and processs id as a json format."""
     
     if f_date or t_date:
         try:
             x = f_date.strftime("%d-%m-%y %H:%M")
             y = t_date.strftime("%d-%m-%y %H:%M")
-            print(x, type(x), y, type(y))
+           
             
             from_date = datetime.datetime.strptime(x, '%d-%m-%y %H:%M')
             to_date = datetime.datetime.strptime(y, '%d-%m-%y %H:%M')
 
-            print(type(from_date), type( to_date))
+            
 
             if from_date < to_date:
                 if to_date > datetime.datetime.now():
                     return 'ERROR: to datetime should not exceed present datetime'
                 else:
                     print('Fetching data')
-                    Dd: Downloader = Downloader(from_date, to_date,"hello")
+                    Dd: Downloader = Downloader(from_date, to_date)
                     res = {}
                     res['Status'] = "process created"
                     res['id'] = Dd.id
@@ -68,6 +71,7 @@ def query_helper_func(f_date, t_date, mail):
 
 @app.post("/query")
 async def get_date(data: Post):
+    """ Take from_date, to_date and email from client and call query_helper_func() and return the json response"""
     f_date = data.fdate
     t_date = data.tdate
     email = data.mail
@@ -80,18 +84,18 @@ async def get_date(data: Post):
 
 
 
-Sche = threading.Thread(target=util_instance.schedule, args=())
-Sche.start()
+threading.Thread(target=util_instance.schedule, args=()).start()
+"""Start the Schedule function in a different thread which is responsible for Scheduling and manage the process that had been created"""
 
+threading.Thread(target=clear_directory, args=()).start()
+"""Responsible for deleting the downloaded csv inside Dowloaded_csv folder, which are more than 1 hour here."""
 
-delete_file = threading.Thread(target=clear_directory, args=())
-delete_file.start()
 
 
 
 @app.get("/get_csv")
 async def get_csv(id: str):
-    print(id)
+    """Take process id as get request and return the csv file downloaded by that process"""
 
     if os.path.exists(f'./Downloaded_csv/{id}.csv'):
 
@@ -117,8 +121,7 @@ async def get_csv(id: str):
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, process_id: str):
-#     th = threading.Thread(target=helper, args=(websocket, process_id))
-#     th.start()
+    """Takes process_id for connection and emit the progress of the process in every 5 seconds in json format"""
 
     await websocket.accept()
     print(process_id)

@@ -6,13 +6,14 @@ from genericpath import isfile
 from datetime import datetime 
 import os
 class util:
-    def __init__(self) -> None:
-        pass
+    """This is a collection of necessary function which are used in srever.py and main.py"""
         
-    def schedule(self):
+    def schedule(self) -> None:
+        """ It's a Non-preemtive schedular running on a different thread, if size of Running dict less than 10 then it
+        takes programme from Waiting list, start the process and put it inside running dict"""
         while True:
             i = 0
-            #print(f" OUTSIDE: len(server.Running) = {len(server.Running)} len(server.server.Waiting) = {len(server.Waiting)}")
+           
             while len(server.Running) < 10 and len(server.Waiting)>0:
                 i = 1
                 temp = server.Waiting.pop(0)
@@ -24,7 +25,6 @@ class util:
                 temp.thread.start()
 
             for k , v in list(server.Running.items()):
-                # print(f"{v.id} progress = {v.progress}%")
                 
                 if v.progress >= 100:
                     print(f"The thread {temp.id} is done executing")
@@ -35,6 +35,8 @@ class util:
 
     
     def find_obj(self,process_id):
+        """this function find the Downloader object first in Running dict then in Waiting list, if it couldn't find anything 
+        then it return 0"""
         if len(server.Running) >0 or len(server.Waiting) > 0:
             print("inside loop")
 
@@ -52,8 +54,11 @@ class util:
             return 0
 
     def my_func(self,process_id):
+        """This function takes process id and return the id, progress and estimated time of the process
+        in Dict format to websocket endpoint in server.py"""
         
         obj = self.find_obj(process_id)
+
         if obj:
             try:
 
@@ -73,6 +78,8 @@ class util:
 
 
     def ET(self, id,et):
+        """This is a function call by estimated_time() in  Downloader class in main.py , it returns the
+        total time need for the process to be executed"""
         if id in server.Running:
             return server.Running[id].et
         lines = len(server.Waiting)//10
@@ -84,6 +91,7 @@ class util:
         return et
 
     def find_nth_smallest_et(self,pos):
+        """Return the Process object which have nth_smallest estimated time."""
         list1 = []
         for k,v in list(server.Running.items()):
             list1.append(v)
@@ -107,6 +115,8 @@ class util:
 
 
 def send_email(reciver_mail, id):
+    """It takes the receiver mail and the process id, and send the process id and the endpoint to this 
+    email address, Runs on a different thred"""
     gmail_user = "SENDER_EMAIL"
     gmail_password = "SENDER_PASSWORD"
 
@@ -130,6 +140,9 @@ def send_email(reciver_mail, id):
 
 
 def clear_directory():
+    """if a file downloaded and here hour or more then this function automatically delete that file 
+    
+    """
     while True:
         time_list = []
         now = time.mktime(datetime.now().timetuple())
