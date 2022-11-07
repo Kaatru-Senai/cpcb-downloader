@@ -45,8 +45,10 @@ class Downloader:
         self.et = 0
 
 
-    def ecmwf_downloader():
-        pass
+    def ecmwf_downloader(self):
+        ecmwf_data_download(self.from_date, self.to_date, self.id)
+
+        
     def start_process(self):
         """
         This function responsible for calling get_cpcb_data and download save the file, file name is the unique id generated uuid module

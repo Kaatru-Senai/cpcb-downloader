@@ -21,6 +21,7 @@ app = FastAPI()
 class Post(BaseModel):
     fdate: str 
     tdate: str
+    src_type: str
     mail: str
     
 file = 'configfile.ini'
@@ -32,7 +33,7 @@ dev_mode = int(config['dev mode']['dev'])
 
 
 
-def query_helper_func(f_date, t_date, mail):
+def query_helper_func(f_date, t_date, flag, mail):
     """Process the datetime obj it got from post request, and create the process with this and push that into waiting list, to be schedule by the schedule function inside utility.py
     also return a response containing status and processs id as a json format."""
     
@@ -56,7 +57,7 @@ def query_helper_func(f_date, t_date, mail):
                     return 'ERROR: to datetime should not exceed present datetime'
                 else:
                     print('Fetching data')
-                    Dd: Downloader = Downloader(from_date, to_date)
+                    Dd: Downloader = Downloader(from_date, to_date, flag)
                     res = {}
                     res['Status'] = "process created"
                     res['id'] = Dd.id
@@ -83,8 +84,9 @@ async def get_date(data: Post):
     f_date = data.fdate
     t_date = data.tdate
     email = data.mail
+    flag = data.src_type
     
-    res = query_helper_func(f_date, t_date, email)
+    res = query_helper_func(f_date, t_date, flag, email)
     return res
 
 
