@@ -25,17 +25,25 @@ from utility import ET
 
 class Downloader:
     """Takes from_date and to_date and download data from cpcb station save as csv file"""
-    def __init__(self, f_date, t_date) -> None:
+    def __init__(self, f_date, t_date, Flag) -> None:
         self.from_date = f_date
         self.to_date = t_date
         self.id = uuid.uuid1()
+        self.flag = Flag.lower()
         self.progress = 0
-        self.thread = threading.Thread(target=self.start_process, args=())
-        self.thread_id = self.thread.getName()
+        self.process = None
+        if self.flag.lower() == "ecmwf":
+            self.process = self.ecmwf_downloader
+        else:
+            self.process = self.start_process
+        self.thread = threading.Thread(target=self.process, args=())
+        
         self.selftime = None
         self.et = 0
 
 
+    def ecmwf_downloader():
+        pass
     def start_process(self):
         """
         This function responsible for calling get_cpcb_data and download save the file, file name is the unique id generated uuid module
