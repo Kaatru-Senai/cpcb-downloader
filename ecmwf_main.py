@@ -12,7 +12,7 @@ CDS_URL = os.getenv('CDS_URL')
 CDS_KEY = os.getenv('CDS_KEY')
 cds_client = cdsapi.Client(url=CDS_URL, key=CDS_KEY, progress=False)
 
-def create_folders(list_of_folders: list=['downloaded_data', 'output_data']):
+def create_folders(list_of_folders: list=['temp_files', 'Downloaded_csv']): #ch
     """
     Creates the directories to store data as per the project structure.
     The function checks if the requrired directories are present in the

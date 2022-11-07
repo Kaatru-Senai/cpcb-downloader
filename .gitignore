@@ -1,5 +1,5 @@
 Downloaded_csv
 venv
-        .env
-        __pycache__/ecmwf_utils.cpython-310.pyc
-        output_data/
+.env
+__pycache__/ecmwf_utils.cpython-310.pyc
+output_data/
