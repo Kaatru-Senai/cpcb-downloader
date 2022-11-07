@@ -136,7 +136,8 @@ async def websocket_endpoint(websocket: WebSocket, process_id: str):
     """Takes process_id for connection and emit the progress of the process in every 5 seconds in json format"""
 
     await websocket.accept()
-    print(process_id)
+    if dev_mode:
+        print(process_id)
     
     while True:
         

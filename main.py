@@ -35,7 +35,7 @@ class Downloader:
         self.progress = 0
         self.process = None
 
-        if self.flag.lower() == "ecmwf":
+        if "ec" in self.flag.lower() or "wf" in self.flag.lower() or "ecm" in self.flag.lower():
             self.process = self.ecmwf_downloader
         else:
             self.process = self.start_process
@@ -46,9 +46,9 @@ class Downloader:
 
 
     def ecmwf_downloader(self):
-        ecmwf_data_download(self.from_date, self.to_date, self.id)
+        ecmwf_data_download(str(self.from_date), str(self.to_date), str(self.id))
 
-        
+
     def start_process(self):
         """
         This function responsible for calling get_cpcb_data and download save the file, file name is the unique id generated uuid module

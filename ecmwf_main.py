@@ -35,8 +35,8 @@ def download_data(
                 data_from_hour: str="00:00",
                 data_download_format: str='grib',
                 bounding_box: list=[38, 68, 7, 98],
-                data_download_home_path: str="downloaded_data",
-                output_data_home_path: str="output_data",
+                data_download_home_path: str="temp_files",
+                output_data_home_path: str="Downloaded_csv",
                 _FORECASTED_VARIABLES: list = ["particulate_matter_2.5um"],
                 _PRODUCT: str="cams-global-atmospheric-composition-forecasts",
                 _TYPE: str="forecast",
@@ -71,10 +71,10 @@ def download_data(
 
     data_download_home_path: (str) : Folder path to download the .grib and .csv files which are downloaded from
                                      ECMWF servers.
-                                     Example: "downloaded_data"
+                                     Example: "temp_files"
 
     output_data_home_path: (str) :  Folder path to store final, processed data.
-                                    Example: "output_data"
+                                    Example: "Downloaded_csv"
 
     _FORECASTED_VARIABLES: (list) : List of variables which needs to be forecasted.
                                     Format: ['str']
@@ -145,8 +145,8 @@ def download_data(
             output.drop(columns=["latitude","longitude", "date"], inplace=True)
             data = pd.concat([data, output], axis=1)
 
-            utils.remove_file(parent_folder= "downloaded_data", extension="grib")
-            utils.remove_file(parent_folder="downloaded_data", extension="csv")
+            utils.remove_file(parent_folder= "temp_files", extension="grib")
+            utils.remove_file(parent_folder="temp_files", extension="csv")
             
             count += 1
 
@@ -165,15 +165,15 @@ def download_data(
 def ecmwf_data_download(f_date, t_date, id):#ch
     create_folders()
     download_data(
-                from_date=f_date,#ch
-                to_date=t_date,#ch
-                process_id = id,#ch
+                from_date=f_date.split(' ')[0], #only takes yyyy-mm-dd format
+                to_date=t_date.split(' ')[0],
+                id = id,#ch
                 forecast_lead_time=['0', '1', '2'],
                 data_from_hour="00:00",
                 data_download_format='grib',
                 bounding_box=[38, 68, 7, 98],
-                data_download_home_path="downloaded_data",
-                output_data_home_path="output_data",
+                data_download_home_path="temp_files",
+                output_data_home_path="Downloaded_csv",
                 _FORECASTED_VARIABLES=["particulate_matter_2.5um"],
                 _PRODUCT="cams-global-atmospheric-composition-forecasts",
                 _TYPE="forecast",

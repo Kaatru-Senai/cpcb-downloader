@@ -3,3 +3,6 @@ venv
 .env
 __pycache__/ecmwf_utils.cpython-310.pyc
 output_data/
+__pycache__/ecmwf_main.cpython-310.pyc
+__pycache__/server.cpython-310.pyc
+__pycache__/main.cpython-310.pyc
