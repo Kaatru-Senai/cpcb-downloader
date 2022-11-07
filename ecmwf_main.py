@@ -30,6 +30,7 @@ def create_folders(list_of_folders: list=['downloaded_data', 'output_data']):
 def download_data(
                 from_date: str,
                 to_date: str,
+                id: str,
                 forecast_lead_time: list=['0'],
                 data_from_hour: str="00:00",
                 data_download_format: str='grib',
@@ -149,7 +150,7 @@ def download_data(
             
             count += 1
 
-        data.to_csv(f"{output_data_home_path}/{from_date}_{to_date}.csv", index=False) #
+        data.to_csv(f"{output_data_home_path}/{id}.csv", index=False) #ch
         print('[+] Download complete')
 
     except Exception as err:
@@ -161,11 +162,12 @@ def download_data(
 
         
 
-def ecmwf_data_download(f_date, t_date):
+def ecmwf_data_download(f_date, t_date, id):#ch
     create_folders()
     download_data(
-                from_date=f_date,
-                to_date=t_date,
+                from_date=f_date,#ch
+                to_date=t_date,#ch
+                process_id = id,#ch
                 forecast_lead_time=['0', '1', '2'],
                 data_from_hour="00:00",
                 data_download_format='grib',
