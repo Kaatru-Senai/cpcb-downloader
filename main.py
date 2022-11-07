@@ -11,6 +11,8 @@ from model.response_data import ParseData
 import threading
 from configparser import ConfigParser
 import uuid
+from ecmwf_main import ecmwf_data_download
+
 file = 'configfile.ini'
 config = ConfigParser()
 config.read(file)
@@ -32,6 +34,7 @@ class Downloader:
         self.flag = Flag.lower()
         self.progress = 0
         self.process = None
+
         if self.flag.lower() == "ecmwf":
             self.process = self.ecmwf_downloader
         else:
