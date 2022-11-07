@@ -161,11 +161,11 @@ def download_data(
 
         
 
-if __name__=="__main__":
+def ecmwf_data_download(f_date, t_date):
     create_folders()
     download_data(
-                from_date="2022-10-12",
-                to_date="2022-10-16",
+                from_date=f_date,
+                to_date=t_date,
                 forecast_lead_time=['0', '1', '2'],
                 data_from_hour="00:00",
                 data_download_format='grib',
