@@ -1,0 +1,8 @@
+version: '3.6'
+services:
+  environment:
+    - TZ=Asia/India
+
+  volumes:
+    - "/etc/localtime:/etc/localtime:ro"
+    - "/etc/timezone:/etc/timezone:ro"
