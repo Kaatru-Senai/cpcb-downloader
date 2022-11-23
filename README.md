@@ -12,19 +12,25 @@ It download data from CPCB website send the progress report to the user and save
 * `cpcb api`
 * `threading`
 * `asyncio`
-## FEATURES/DESCRIPTION
-* The `/query` endpoint takes time duration and emailId and create process which will then download data from cpcb, and send the `id` of that process, the downloaded data file name will be same as the id of the process.
-* A websocket with `/ws` endpoint take `process_id` parameter and emit the progress and the estimated time to be completion of the downloading process that was requested with a interval of `5 seconds`.
-* Each of the csv file have unique name example: `c19a0ee8-4f7c-11ed-a6de-30d04230008c.csv` created with help of python `uuid` library.
-* Each downloading process run on a different thread.
-* Maximum `10` downloading can happen at a time, and other will be in `ready` state until the schedular function `schedule` start their process. The schedule function also running in a different thread in a infinite while loop with a interval of `5 seconds`.
+
+
+## ARCHITECTURE
+
+<img src="https://user-images.githubusercontent.com/81956230/203494306-023c97a5-f195-4824-ad06-7b58b358f58f.jpg" width="500px" />
+
+
+* Everything start with getting request in `/query` endpoint where it takes "from_data", "to_date" and "mail" and initialize Obj from downloader class in `main.py` where it create a thread for the `start_process` (which download the data) and create a unique `id` for that object and send the id to that input email.
+* Then it puts this object inside Waiting `Queue` or list.
+* To send the progress there is a `websocket` with `/ws` endpoint which takes process id (the unique id created while initialization of downloader obj) and send the estimated time to complete the downloading process and the percentage of download completetion.
+
+* There is a schedular function, in a interval of 5 seconds it checks the `python dictonary` (which contains all the running data download process) if number of process/object inside that dictionary is less than `10` then it pop/dequeue a element from waiting queue and start that process thread, and puts inside dictionary, Also if any process inside dictionary is completed it pop that process from that dict.
+* The downloaded data save as csv file wher the file name is the object unique id.
 * Api endpoint with ```/get_csv ``` which will take the `file name` or `id` of the process and return the downloaded csv file.
 * After one file downloaded a function `clear_directory` will delete all the csv file which are the there for hour or more.
 
 
 
-
-# CONTRIBUTE
+# DOWNLOAD and RUN
 ### Step 1: Clone project
 You can use github GUI to download the file as zip or you can use below git command
 
