@@ -1,33 +1,77 @@
 # CPCB downloader
-A tool to download data from the CPCB website.
 
 
-## Getting Started
-CPCB downloader is a Python Application which makes downloading data from CPCB website easy.
-
-There is a list of stations with the respective `site id` which will be used to make request to the cpcb website. Once data from every station is downloaded, the response data will be parsed and merged into a `pandas dataframe`. At the end the dataframe will be converted into a `csv file` and saved in the working directory.
+## OVERVIEW
+It download data from CPCB website send the progress report to the user and save localy as csv file with a unique name, It will take around `8-10 minutes` for all the station's data to be downloaded. A user can send request for download a specific csv file by giving the name of the file with request. After one hour of download of a file, it's automatically deleted.
 
 
-### Installing
+## TECH STACK
+* `Python`
+* `fastapi`
+* `websocket` #from fastapi 
+* `cpcb api`
+* `threading`
+* `asyncio`
 
-A step by step series of examples that tell you how to get a development env running
 
-1. Install all the requirements
+## ARCHITECTURE
 
+<img src="https://user-images.githubusercontent.com/81956230/203494306-023c97a5-f195-4824-ad06-7b58b358f58f.jpg" width="500px" />
+
+
+* Everything start with getting request in `/query` endpoint where it takes "from_data", "to_date" and "mail" and initialize Obj from downloader class in `main.py` where it create a thread for the `start_process` (which download the data) and create a unique `id` for that object and send the id to that input email.
+* Then it puts this object inside Waiting `Queue` or list.
+* To send the progress there is a `websocket` with `/ws` endpoint which takes process id (the unique id created while initialization of downloader obj) and send the estimated time to complete the downloading process and the percentage of download completetion.
+
+* There is a schedular function, in a interval of 5 seconds it checks the `python dictonary` (which contains all the running data download process) if number of process/object inside that dictionary is less than `10` then it pop/dequeue a element from waiting queue and start that process thread, and puts inside dictionary, Also if any process inside dictionary is completed it pop that process from that dict.
+* The downloaded data save as csv file wher the file name is the object unique id.
+* Api endpoint with ```/get_csv ``` which will take the `file name` or `id` of the process and return the downloaded csv file.
+* After one file downloaded a function `clear_directory` will delete all the csv file which are the there for hour or more.
+
+
+
+# DOWNLOAD and RUN
+### Step 1: Clone project
+You can use github GUI to download the file as zip or you can use below git command
+
+```sh
+git clone https://github.com/Kaatru-Senai/cpcb-downloader.git
+cd cpcb-downloader
 ```
-pip install -r requirements.txt
+
+### Step 2: Install requirements
+Install necessary library with the help of requirements.txt by using below command
+```python
+pip install -r requirements.txt  (for windows cmd).
+
+or use, 
+pip install ->r requirements.txt (gitbash or hyper terminal)
+```
+* To run the code use
+```python
+  uvicorn server:app --reload
+  ```
+
+### Step 3: Create new branch
+Create a new branch to work on the project
+```sh
+  git checkout -b <Branch name>
 ```
 
-2. Run the main file.
-```
-python main.py -fd <from-date> -td <to-date>
-```
+### Step 4: Commit changes
+Add and commit changes 
+```sh
+  git add <file name>
+  git commit -m "<commit message>"
+ ```
+### Step 5: Create pull request
+Push your branch to the origin, and create pull request
 
-The main file takes two arguments which are `from date (fd)` and `to date (td)`. The dates are used to get data during that time period.
-The format for for `from date (fd)` and `to date (td)` is `dd-mm-yyyy hh:mm (use 24H)` 
+```sh
+  git push -u origin <branch name>
+ ```
 
 
-It will take around `8-10 minutes` for all the station's data to be downloaded.
 
 ## Authors
 
