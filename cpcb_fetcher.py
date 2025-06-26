@@ -122,19 +122,16 @@ def get_all_measurements(sensor_id, location_id, frequency="hourly", from_date=N
                 "parameter_id": param.get("id"),
                 "parameter_name": param.get("name"),
                 "units": param.get("units"),
-
                 "period_label": period.get("label"),
                 "period_from_utc": period.get("datetimeFrom", {}).get("utc"),
                 "period_to_utc": period.get("datetimeTo", {}).get("utc"),
                 "period_from_local": period_from_str,
                 "period_to_local": period.get("datetimeTo", {}).get("local"),
-
                 "summary_avg": summary.get("avg"),
                 "summary_min": summary.get("min"),
                 "summary_max": summary.get("max"),
                 "summary_median": summary.get("median"),
                 "summary_sd": summary.get("sd"),
-
                 "coverage_percent": coverage.get("percentCoverage"),
                 "coverage_complete": coverage.get("percentComplete"),
                 "coverage_expected_count": coverage.get("expectedCount"),
